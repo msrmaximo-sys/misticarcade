@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>MisticArcade Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root {
+  --bg:      #050810;
+  --bg2:     #0a0f1e;
+  --bg3:     #0f1628;
+  --cyan:    #00f5ff;
+  --magenta: #ff00aa;
+  --gold:    #ffd700;
+  --green:   #00ff88;
+  --red:     #ff4455;
+  --text:    #c8d8f0;
+  --dim:     #5a7090;
+  --border:  #1a2a4a;
+  --gc:      0 0 8px #00f5ff88, 0 0 22px #00f5ff33;
+  --gm:      0 0 8px #ff00aa88, 0 0 22px #ff00aa33;
+  --gg:      0 0 8px #ffd70088, 0 0 22px #ffd70033;
+  --fn:      'Orbitron', monospace;
+  --fm:      'Share Tech Mono', monospace;
+  --fb:      'Rajdhani', sans-serif;
+  --r:       6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--fb);font-size:16px;
+  min-height:100vh;overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+/* Scanlines */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);
+  pointer-events:none;z-index:9999;
+}
+/* Grid bg */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,245,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,245,255,.035) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0;
+}
+
+/* ═══════════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════════ */
+#loginScreen{
+  position:fixed;inset:0;z-index:500;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:1.5rem;
+  padding:2rem;
+}
+#loginScreen.hidden{display:none}
+.login-box{
+  background:var(--bg2);
+  border:1px solid var(--cyan);
+  border-radius:var(--r);
+  box-shadow:var(--gc);
+  padding:2.5rem 2rem;
+  width:100%;max-width:380px;
+  text-align:center;
+}
+.login-logo{
+  font-family:var(--fn);font-size:1.5rem;font-weight:900;
+  background:linear-gradient(90deg,var(--cyan),var(--magenta));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.3rem;
+  filter:drop-shadow(0 0 10px #00f5ff55);
+}
+.login-sub{font-family:var(--fm);font-size:.7rem;color:var(--dim);letter-spacing:.3em;margin-bottom:2rem}
+.login-box label{
+  display:block;font-family:var(--fn);font-size:.65rem;
+  color:var(--cyan);letter-spacing:.15em;text-align:left;margin-bottom:.4rem;
+}
+.login-box input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:.7rem 1rem;
+  color:var(--text);font-family:var(--fm);font-size:.9rem;
+  outline:none;margin-bottom:1rem;transition:border-color .2s;
+}
+.login-box input:focus{border-color:var(--cyan);box-shadow:var(--gc)}
+.login-info{
+  font-size:.8rem;color:var(--dim);margin-bottom:1.5rem;line-height:1.6;
+}
+.login-info strong{color:var(--gold)}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  position:relative;z-index:10;text-align:center;
+  padding:1.8rem 1rem 1.2rem;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(0,245,255,.06) 0%,transparent 100%);
+}
+.logo{
+  font-family:var(--fn);font-size:clamp(1.5rem,4.5vw,3rem);font-weight:900;
+  letter-spacing:.08em;
+  background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 10px #00f5ff55);
+  animation:plogo 3s ease-in-out infinite;
+}
+@keyframes plogo{0%,100%{filter:drop-shadow(0 0 10px #00f5ff55)}50%{filter:drop-shadow(0 0 20px #ff00aa55)}}
+.logo-sub{font-family:var(--fm);font-size:.68rem;color:var(--dim);letter-spacing:.3em;margin-top:.3rem}
+
+/* ── Barra de usuario ── */
+.user-bar{
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+  margin-top:.9rem;flex-wrap:wrap;
+}
+.saldo-display{
+  font-family:var(--fm);font-size:.85rem;
+  background:var(--bg2);border:1px solid var(--gold);
+  border-radius:var(--r);padding:.35rem .8rem;
+  color:var(--gold);box-shadow:var(--gg);
+}
+.user-name{font-family:var(--fm);font-size:.8rem;color:var(--dim)}
+
+/* ── Nav ── */
+nav{display:flex;justify-content:center;gap:.4rem;margin-top:1rem;flex-wrap:wrap}
+.tab-btn{
+  font-family:var(--fn);font-size:.62rem;letter-spacing:.12em;
+  padding:.5rem 1.1rem;border:1px solid var(--border);
+  background:var(--bg2);color:var(--dim);
+  cursor:pointer;border-radius:var(--r);transition:all .2s;text-transform:uppercase;
+}
+.tab-btn:hover,.tab-btn.active{border-color:var(--cyan);color:var(--cyan);box-shadow:var(--gc);background:rgba(0,245,255,.07)}
+
+/* ═══════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════ */
+main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:1.5rem 1rem 5rem}
+.section{display:none}
+.section.active{display:block}
+.section-title{
+  font-family:var(--fn);font-size:.95rem;color:var(--cyan);
+  letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:1.2rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.6rem;
+}
+.section-title::before{content:'';display:inline-block;width:4px;height:1.1em;background:var(--cyan);box-shadow:var(--gc)}
+
+/* ═══════════════════════════════════════════
+   BOTONES GENERALES
+═══════════════════════════════════════════ */
+.btn{
+  font-family:var(--fn);font-size:.62rem;letter-spacing:.1em;
+  padding:.6rem 1.2rem;border-radius:var(--r);cursor:pointer;
+  border:1px solid;transition:all .2s;text-transform:uppercase;
+  touch-action:manipulation;
+}
+.btn-cyan{border-color:var(--cyan);color:var(--cyan);background:transparent}
+.btn-cyan:hover,.btn-cyan:active{background:rgba(0,245,255,.12);box-shadow:var(--gc)}
+.btn-magenta{border-color:var(--magenta);color:var(--magenta);background:transparent}
+.btn-magenta:hover,.btn-magenta:active{background:rgba(255,0,170,.12);box-shadow:var(--gm)}
+.btn-gold{border-color:var(--gold);color:var(--gold);background:transparent}
+.btn-gold:hover,.btn-gold:active{background:rgba(255,215,0,.12);box-shadow:var(--gg)}
+.btn-green{border-color:var(--green);color:var(--green);background:transparent}
+.btn-green:hover,.btn-green:active{background:rgba(0,255,136,.12)}
+.btn-red{border-color:var(--red);color:var(--red);background:transparent}
+
+/* ═══════════════════════════════════════════
+   TIENDA
+═══════════════════════════════════════════ */
+.search-bar{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.search-bar input{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:.6rem .9rem;
+  color:var(--text);font-family:var(--fm);font-size:.82rem;
+  outline:none;transition:border-color .2s;
+}
+.search-bar input:focus{border-color:var(--cyan);box-shadow:var(--gc)}
+
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.9rem}
+.product-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.1rem;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.product-card:hover{border-color:var(--magenta);box-shadow:var(--gm)}
+.product-emoji{font-size:2rem;margin-bottom:.4rem}
+.product-name{font-family:var(--fn);font-size:.72rem;color:var(--cyan);letter-spacing:.05em;margin-bottom:.25rem}
+.product-desc{font-size:.83rem;color:var(--dim);line-height:1.4;margin-bottom:.6rem}
+.product-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.6rem;flex-wrap:wrap;gap:.4rem}
+.product-price{font-family:var(--fm);font-size:1rem;color:var(--gold)}
+.stock-badge{font-family:var(--fm);font-size:.68rem;color:var(--dim)}
+.stock-low{color:var(--red)}
+
+/* ═══════════════════════════════════════════
+   CARRITO
+═══════════════════════════════════════════ */
+.cart-layout{display:grid;grid-template-columns:1fr 300px;gap:1.2rem;align-items:start}
+@media(max-width:680px){.cart-layout{grid-template-columns:1fr}}
+.cart-items{display:flex;flex-direction:column;gap:.5rem}
+.cart-item{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:.8rem 1rem;
+  display:flex;justify-content:space-between;align-items:center;gap:.8rem;
+}
+.cart-item-name{font-family:var(--fn);font-size:.68rem;color:var(--cyan)}
+.cart-item-price{font-family:var(--fm);font-size:.82rem;color:var(--gold);margin-top:.2rem}
+.qty-ctrl{display:flex;gap:.3rem;align-items:center}
+.qty-btn{
+  width:28px;height:28px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text);border-radius:4px;
+  cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;touch-action:manipulation;
+}
+.qty-btn:hover,.qty-btn:active{border-color:var(--cyan);color:var(--cyan)}
+.qty-n{font-family:var(--fm);width:22px;text-align:center;font-size:.85rem}
+.cart-summary{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.1rem;position:sticky;top:1rem;
+}
+.sum-row{
+  display:flex;justify-content:space-between;
+  font-family:var(--fm);font-size:.82rem;
+  padding:.35rem 0;border-bottom:1px solid var(--border);
+}
+.sum-row:last-of-type{border-bottom:none}
+.sum-total{font-family:var(--fn);font-size:1.1rem;color:var(--gold)}
+.cart-empty{text-align:center;padding:2.5rem;color:var(--dim);font-family:var(--fm);font-size:.85rem}
+
+/* ═══════════════════════════════════════════
+   ARCADE
+═══════════════════════════════════════════ */
+.arcade-layout{display:grid;grid-template-columns:1fr 240px;gap:1.2rem;align-items:start}
+@media(max-width:680px){.arcade-layout{grid-template-columns:1fr}}
+
+.game-container{
+  background:var(--bg2);border:1px solid var(--cyan);
+  border-radius:var(--r);padding:.9rem;
+  box-shadow:var(--gc);
+  display:flex;flex-direction:column;align-items:center;gap:.8rem;
+}
+.game-hud{
+  display:flex;gap:1.5rem;font-family:var(--fm);font-size:.8rem;flex-wrap:wrap;justify-content:center;
+}
+.hud-item span:first-child{color:var(--dim)}
+.hud-item span:last-child{color:var(--cyan);font-weight:bold}
+
+.game-wrap{position:relative;width:100%}
+#gameCanvas{
+  background:#000;border:1px solid var(--border);border-radius:4px;
+  display:block;image-rendering:pixelated;
+  width:100%;max-width:500px;height:auto;
+  margin:0 auto;
+}
+/* Overlay */
+#gameOverlay{
+  position:absolute;inset:0;background:rgba(5,8,16,.92);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:.8rem;border-radius:var(--r);
+  text-align:center;z-index:50;padding:1rem;
+}
+#gameOverlay.hidden{display:none}
+.ov-title{font-family:var(--fn);font-size:clamp(1rem,4vw,1.5rem);color:var(--cyan)}
+.ov-score{font-family:var(--fm);font-size:.95rem;color:var(--gold)}
+.ov-msg{font-size:.85rem;color:var(--text);max-width:280px;line-height:1.5}
+
+/* ── Controles táctiles ── */
+#touchControls{
+  display:none;  /* se muestra solo en táctil */
+  width:100%;max-width:500px;
+  padding:.5rem 0 .3rem;
+}
+.touch-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.touch-btn{
+  font-family:var(--fn);font-size:.7rem;letter-spacing:.05em;
+  padding:.8rem 1.4rem;border:1px solid var(--cyan);
+  background:rgba(0,245,255,.08);color:var(--cyan);
+  border-radius:var(--r);cursor:pointer;
+  touch-action:manipulation;user-select:none;
+  -webkit-user-select:none;transition:all .1s;
+  min-width:80px;text-align:center;
+}
+.touch-btn:active{background:rgba(0,245,255,.25);box-shadow:var(--gc);transform:scale(.96)}
+.touch-fire{
+  border-color:var(--green);color:var(--green);
+  background:rgba(0,255,136,.08);
+  flex:1;max-width:160px;padding:.9rem;
+}
+.touch-fire:active{background:rgba(0,255,136,.25)}
+
+/* Mostrar controles en móvil */
+@media(hover:none),(pointer:coarse){
+  #touchControls{display:flex;flex-direction:column;gap:.4rem}
+  .game-controls{display:none}
+}
+
+.game-controls{font-family:var(--fm);font-size:.72rem;color:var(--dim);text-align:center;line-height:1.9}
+.game-controls kbd{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.1em .4em;color:var(--cyan)}
+
+/* Panel lateral */
+.arcade-panel{display:flex;flex-direction:column;gap:.9rem}
+.panel-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem}
+.panel-card h3{font-family:var(--fn);font-size:.65rem;color:var(--magenta);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.7rem}
+.reward-info{font-size:.83rem;color:var(--dim);line-height:1.6;margin-bottom:.7rem}
+.reward-info strong{color:var(--gold)}
+.penalty-info{font-size:.78rem;color:var(--red);line-height:1.5}
+.penalty-info strong{color:var(--red)}
+.progress-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:.3rem}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--magenta));transition:width .3s;border-radius:3px}
+.progress-label{font-family:var(--fm);font-size:.68rem;color:var(--dim);text-align:right}
+
+/* Saldo animado */
+.saldo-change{
+  font-family:var(--fm);font-size:.82rem;text-align:center;
+  padding:.3rem .7rem;border-radius:var(--r);margin-top:.4rem;
+  opacity:0;transition:opacity .4s;
+}
+.saldo-change.show{opacity:1}
+.saldo-gain{background:rgba(0,255,136,.12);color:var(--green);border:1px solid var(--green)}
+.saldo-loss{background:rgba(255,68,85,.12);color:var(--red);border:1px solid var(--red)}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:1.5rem;right:1rem;left:1rem;
+  max-width:340px;margin:0 auto;
+  background:var(--bg2);border:1px solid var(--cyan);
+  border-radius:var(--r);padding:.8rem 1.1rem;
+  font-family:var(--fm);font-size:.8rem;color:var(--cyan);
+  box-shadow:var(--gc);z-index:1000;
+  transform:translateY(120px);opacity:0;
+  transition:all .35s cubic-bezier(.175,.885,.32,1.275);
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.error{border-color:var(--red);color:var(--red)}
+#toast.success{border-color:var(--green);color:var(--green)}
+#toast.warn{border-color:var(--gold);color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PANTALLA DE LOGIN
+══════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">MisticArcade Hub</div>
+    <div class="login-sub">// Portal Místico-Digital //</div>
+
+    <label for="loginName">Tu nombre de jugador</label>
+    <input type="text" id="loginName" placeholder="Ej: Maxi, Nicki, Ema..."
+           maxlength="50" autocomplete="off"
+           onkeydown="if(event.key==='Enter')doLogin()" />
+
+    <div class="login-info">
+      Si es tu primera vez, se crea tu cuenta automáticamente con
+      <strong>$2000 de saldo virtual</strong> para empezar a comprar.
+    </div>
+    <button class="btn btn-cyan" style="width:100%;padding:.8rem" onclick="doLogin()">
+      ▶ INGRESAR AL HUB
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header>
+  <div class="logo">MisticArcade Hub</div>
+  <div class="logo-sub">// Incienso &amp; Arcade —  Portal Místico-Digital //</div>
+
+  <div class="user-bar">
+    <span class="user-name" id="headerUser">—</span>
+    <span class="saldo-display">💠 Saldo: $<span id="headerSaldo">0.00</span></span>
+    <button class="btn btn-red" style="font-size:.55rem;padding:.35rem .7rem" onclick="doLogout()">Salir</button>
+  </div>
+
+  <nav>
+    <button class="tab-btn active" data-tab="store"  onclick="showTab('store',this)">⬡ Tienda</button>
+    <button class="tab-btn"        data-tab="cart"   onclick="showTab('cart',this)">◈ Carrito <span id="cartCount">(0)</span></button>
+    <button class="tab-btn"        data-tab="arcade" onclick="showTab('arcade',this)">⬡ Arcade</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ══════════════ TIENDA ══════════════ -->
+  <section id="store" class="section active">
+    <h2 class="section-title">Catálogo de Sahumerios</h2>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar por nombre o descripción…"
+             maxlength="100" oninput="debouncedSearch()" />
+      <button class="btn btn-cyan" onclick="loadProducts()">Buscar</button>
+    </div>
+    <div class="product-grid" id="productGrid">
+      <div style="color:var(--dim);font-family:var(--fm)">Cargando productos…</div>
+    </div>
+  </section>
+
+  <!-- ══════════════ CARRITO ══════════════ -->
+  <section id="cart" class="section">
+    <h2 class="section-title">Carrito de Compras</h2>
+    <div class="cart-layout">
+      <div id="cartItems" class="cart-items">
+        <div class="cart-empty">⬡ El carrito está vacío<br><small>Agregá sahumerios desde la tienda</small></div>
+      </div>
+      <div class="cart-summary">
+        <h3 class="section-title" style="font-size:.75rem;margin-bottom:.9rem">Resumen</h3>
+        <div class="sum-row"><span>Subtotal</span><span id="sumSub">$0.00</span></div>
+        <div class="sum-row" id="sumDiscRow" style="display:none">
+          <span style="color:var(--green)">Descuento</span>
+          <span id="sumDisc" style="color:var(--green)">-$0.00</span>
+        </div>
+        <div class="sum-row"><span>Tu saldo</span><span id="sumSaldo" style="color:var(--cyan)">$0.00</span></div>
+        <div class="sum-row"><span>Total</span><span id="sumTotal" class="sum-total">$0.00</span></div>
+
+        <button class="btn btn-gold" style="width:100%;justify-content:center;padding:.75rem;margin-top:1rem"
+                onclick="checkout()">
+          ⬡ Finalizar Compra
+        </button>
+        <div id="checkoutMsg" style="font-family:var(--fm);font-size:.72rem;color:var(--dim);margin-top:.5rem;text-align:center"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ARCADE ══════════════ -->
+  <section id="arcade" class="section">
+    <h2 class="section-title">Space Invaders Arcade</h2>
+    <div class="arcade-layout">
+
+      <div class="game-container">
+        <div class="game-hud">
+          <div class="hud-item"><span>SCORE: </span><span id="hudScore">0</span></div>
+          <div class="hud-item"><span>VIDAS: </span><span id="hudLives">3</span></div>
+          <div class="hud-item"><span>NIVEL: </span><span id="hudLevel">1</span></div>
+        </div>
+
+        <div class="game-wrap">
+          <canvas id="gameCanvas" width="500" height="420"></canvas>
+          <div id="gameOverlay">
+            <div class="ov-title">MISTIC ARCADE</div>
+            <div class="ov-score" id="ovScore"></div>
+            <div class="ov-msg" id="ovMsg">Destruí invasores y ganá saldo virtual.<br>
+              <strong style="color:var(--gold)">+$500</strong> si superás 500 pts ·
+              <strong style="color:var(--red)">−$200</strong> si terminás con menos de 100 pts</div>
+            <button class="btn btn-cyan" style="margin-top:.3rem" onclick="startGame()">▶ INICIAR PARTIDA</button>
+          </div>
+        </div>
+
+        <!-- Controles táctiles (visibles solo en touch) -->
+        <div id="touchControls">
+          <div class="touch-row">
+            <button class="touch-btn" id="btnLeft"
+              ontouchstart="keys['ArrowLeft']=true" ontouchend="keys['ArrowLeft']=false"
+              onmousedown="keys['ArrowLeft']=true"  onmouseup="keys['ArrowLeft']=false">
+              ◀ IZQ
+            </button>
+            <button class="touch-btn touch-fire" id="btnFire" ontouchstart="touchFire()" onmousedown="touchFire()">
+              🔥 FUEGO
+            </button>
+            <button class="touch-btn" id="btnRight"
+              ontouchstart="keys['ArrowRight']=true" ontouchend="keys['ArrowRight']=false"
+              onmousedown="keys['ArrowRight']=true"  onmouseup="keys['ArrowRight']=false">
+              DER ▶
+            </button>
+          </div>
+        </div>
+
+        <div class="game-controls">
+          <kbd>←</kbd> <kbd>→</kbd> mover &nbsp;|&nbsp;
+          <kbd>Espacio</kbd> disparar &nbsp;|&nbsp;
+          <kbd>P</kbd> pausar
+        </div>
+      </div>
+
+      <!-- Panel lateral -->
+      <div class="arcade-panel">
+        <div class="panel-card">
+          <h3>📊 Progreso</h3>
+          <p class="reward-info">Avanzás hacia la recompensa de <strong>$500</strong>:</p>
+          <div class="progress-bar"><div class="progress-fill" id="scoreProgress"></div></div>
+          <div class="progress-label" id="progressLabel">0 / 500</div>
+          <div class="saldo-change" id="saldoChange"></div>
+        </div>
+
+        <div class="panel-card">
+          <h3>🎮 Reglas de Saldo</h3>
+          <p class="reward-info">
+            ✅ Superás <strong>500 pts</strong> → <strong>+$500</strong> a tu saldo<br>
+          </p>
+          <p class="penalty-info">
+            ❌ Terminás con <strong>&lt; 100 pts</strong> → <strong>−$200</strong> de penalización
+          </p>
+        </div>
+
+        <div class="panel-card">
+          <h3>📋 Controles PC</h3>
+          <p class="reward-info" style="font-size:.78rem">
+            ← → para moverte<br>
+            Espacio para disparar<br>
+            P para pausar<br>
+            En celular: botones táctiles
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════
+//  UTILIDADES
+// ═══════════════════════════════════════════
+
+function sanitizeHTML(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str ?? '');
+  return d.innerHTML;
+}
+
+let _toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'show ' + type;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { t.className = ''; }, 3800);
+}
+
+// ═══════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════
+
+let currentUser  = null;  // { nombre, saldo }
+let cart         = {};    // { id: { nombre, precio, qty } }
+
+// ═══════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════
+
+async function doLogin() {
+  const nombre = document.getElementById('loginName').value.trim();
+  if (!nombre || nombre.length < 2) {
+    showToast('Ingresá un nombre de al menos 2 caracteres', 'error'); return;
+  }
+  try {
+    const res  = await fetch('/api/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ nombre })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      currentUser = { nombre: data.nombre, saldo: data.saldo };
+      document.getElementById('loginScreen').classList.add('hidden');
+      updateUserBar();
+      loadProducts();
+      showToast(`¡Bienvenido/a, ${data.nombre}! Saldo: $${data.saldo.toFixed(2)}`, 'success');
+    } else {
+      showToast(data.error || 'Error al ingresar', 'error');
+    }
+  } catch(e) { showToast('Error de conexión', 'error'); }
+}
+
+async function doLogout() {
+  await fetch('/api/logout', { method: 'POST' });
+  currentUser = null;
+  cart = {};
+  updateCartUI();
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginName').value = '';
+}
+
+function updateUserBar() {
+  if (!currentUser) return;
+  document.getElementById('headerUser').textContent  = currentUser.nombre;
+  document.getElementById('headerSaldo').textContent = Number(currentUser.saldo).toFixed(2);
+  document.getElementById('sumSaldo').textContent    = `$${Number(currentUser.saldo).toFixed(2)}`;
+}
+
+// Al cargar: verificar sesión activa
+(async () => {
+  try {
+    const res  = await fetch('/api/me');
+    const data = await res.json();
+    if (data.logged) {
+      currentUser = { nombre: data.nombre, saldo: data.saldo };
+      document.getElementById('loginScreen').classList.add('hidden');
+      updateUserBar();
+      loadProducts();
+    }
+  } catch(e) {}
+})();
+
+// ═══════════════════════════════════════════
+//  NAVEGACIÓN
+// ═══════════════════════════════════════════
+
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else document.querySelector(`[data-tab="${name}"]`)?.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+//  TIENDA
+// ═══════════════════════════════════════════
+
+let _searchDebounce;
+function debouncedSearch() {
+  clearTimeout(_searchDebounce);
+  _searchDebounce = setTimeout(loadProducts, 380);
+}
+
+async function loadProducts() {
+  if (!currentUser) return;
+  const q    = encodeURIComponent(document.getElementById('searchInput').value.trim().slice(0,100));
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '<div style="color:var(--dim);font-family:var(--fm)">Cargando…</div>';
+  try {
+    const data = await fetch(`/api/products?q=${q}`).then(r => r.json());
+    renderProducts(data);
+  } catch(e) {
+    grid.innerHTML = '<div style="color:var(--red);font-family:var(--fm)">Error al cargar productos.</div>';
+  }
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productGrid');
+  if (!products.length) {
+    grid.innerHTML = '<div style="color:var(--dim);font-family:var(--fm)">Sin resultados.</div>';
+    return;
+  }
+  grid.innerHTML = products.map(p => {
+    const stockClass = p.stock <= 3 ? 'stock-low' : '';
+    const stockTxt   = p.stock <= 0 ? '❌ Sin stock' : p.stock <= 3 ? `⚠ Solo ${p.stock}` : `📦 Stock: ${p.stock}`;
+    const btnDisabled = p.stock <= 0 ? 'disabled style="opacity:.4;cursor:not-allowed"' : '';
+    return `
+    <div class="product-card">
+      <div class="product-emoji">${sanitizeHTML(p.emoji)}</div>
+      <div class="product-name">${sanitizeHTML(p.nombre)}</div>
+      <div class="product-desc">${sanitizeHTML(p.desc)}</div>
+      <div class="product-footer">
+        <span class="product-price">$${Number(p.precio).toFixed(2)}</span>
+        <span class="stock-badge ${stockClass}">${stockTxt}</span>
+      </div>
+      <div style="margin-top:.6rem">
+        <button class="btn btn-magenta" style="font-size:.6rem;padding:.4rem .9rem" ${btnDisabled}
+          onclick='addToCart(${p.id}, ${JSON.stringify(sanitizeHTML(p.nombre))}, ${p.precio}, ${p.stock})'>
+          + Agregar al carrito
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+//  CARRITO
+// ═══════════════════════════════════════════
+
+function addToCart(id, nombre, precio, stock) {
+  const enCarrito = cart[id] ? cart[id].qty : 0;
+  if (enCarrito >= stock) {
+    showToast(`No hay más stock disponible para "${nombre}"`, 'warn'); return;
+  }
+  if (cart[id]) { cart[id].qty++; }
+  else          { cart[id] = { nombre, precio, qty: 1, maxStock: stock }; }
+  updateCartUI();
+  showToast(`✓ ${nombre} agregado`, 'success');
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty += delta;
+  if (cart[id].qty <= 0) delete cart[id];
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const items    = Object.entries(cart);
+  const totalQty = items.reduce((s,[,v]) => s + v.qty, 0);
+  document.getElementById('cartCount').textContent = `(${totalQty})`;
+
+  const container = document.getElementById('cartItems');
+  if (!items.length) {
+    container.innerHTML = `<div class="cart-empty">⬡ El carrito está vacío<br><small>Agregá sahumerios desde la tienda</small></div>`;
+  } else {
+    container.innerHTML = items.map(([id, item]) => `
+      <div class="cart-item">
+        <div>
+          <div class="cart-item-name">${sanitizeHTML(item.nombre)}</div>
+          <div class="cart-item-price">$${(item.precio * item.qty).toFixed(2)}</div>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+          <span class="qty-n">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${id},+1)">+</button>
+        </div>
+      </div>`).join('');
+  }
+  recalcTotals();
+}
+
+function recalcTotals() {
+  const sub = Object.values(cart).reduce((s,v) => s + v.precio * v.qty, 0);
+  document.getElementById('sumSub').textContent   = `$${sub.toFixed(2)}`;
+  document.getElementById('sumTotal').textContent = `$${sub.toFixed(2)}`;
+  document.getElementById('sumSaldo').textContent = currentUser ? `$${Number(currentUser.saldo).toFixed(2)}` : '$0.00';
+  document.getElementById('sumDiscRow').style.display = 'none';
+}
+
+async function checkout() {
+  if (!currentUser) { showToast('Iniciá sesión primero', 'error'); return; }
+  const items = Object.entries(cart);
+  if (!items.length) { showToast('El carrito está vacío', 'error'); return; }
+
+  const cartPayload = items.map(([id, item]) => ({ id: parseInt(id), qty: item.qty }));
+  const msgEl = document.getElementById('checkoutMsg');
+  msgEl.textContent = 'Procesando…';
+
+  try {
+    const res  = await fetch('/api/checkout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cart: cartPayload })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      currentUser.saldo = data.nuevo_saldo;
+      updateUserBar();
+      cart = {};
+      updateCartUI();
+      msgEl.style.color = 'var(--green)';
+      msgEl.textContent = data.mensaje;
+      showToast(data.mensaje, 'success');
+      loadProducts(); // refrescar stock
+    } else {
+      msgEl.style.color = 'var(--red)';
+      msgEl.textContent = data.error;
+      showToast(data.error, 'error');
+    }
+  } catch(e) { showToast('Error de red al procesar compra', 'error'); }
+}
+
+// ═══════════════════════════════════════════
+//  SPACE INVADERS
+// ═══════════════════════════════════════════
+
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+
+let gameState    = 'idle';
+let score        = 0;
+let lives        = 3;
+let level        = 1;
+let gameToken    = null;
+let rewardSent   = false;
+let penaltySent  = false;
+let animFrame;
+let shootCooldown = 0;
+let lastEMove    = 0;
+let lastEShot    = 0;
+let enemyDir     = 1;
+
+const keys = {};
+let player, bullets, enemyBullets, enemies, particles;
+
+const C = {
+  player: '#00f5ff', e1: '#ff00aa', e2: '#ff6633',
+  e3: '#ffd700',  bullet: '#00ff88', ebullet: '#ff4455',
+};
+
+function initEntities() {
+  player       = { x: 225, y: 385, w: 30, h: 16, spd: 4 };
+  bullets      = [];
+  enemyBullets = [];
+  particles    = [];
+  enemies      = [];
+  const types = [3,2,1,1];
+  for (let r = 0; r < 4; r++)
+    for (let c = 0; c < 10; c++)
+      enemies.push({ x: 20 + c*46, y: 28 + r*34, w:28, h:16, type:types[r], alive:true });
+}
+
+const EMOVE_INT  = () => Math.max(90,  500 - level * 35);
+const ESHOOT_INT = () => Math.max(450, 1800 - level * 90);
+
+function gameLoop(ts) {
+  if (gameState !== 'running') return;
+  ctx.fillStyle = '#000011';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Player movement
+  if (keys['ArrowLeft']  && player.x > 0)                     player.x -= player.spd;
+  if (keys['ArrowRight'] && player.x < canvas.width-player.w) player.x += player.spd;
+
+  // Bullets move
+  for (let i = bullets.length-1; i >= 0; i--) {
+    bullets[i].y -= 7;
+    if (bullets[i].y < 0) { bullets.splice(i,1); continue; }
+    let hit = false;
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      if (rHit(bullets[i], e)) {
+        e.alive = false;
+        score  += e.type * 10;
+        burst(e.x+e.w/2, e.y+e.h/2, C['e'+e.type]);
+        bullets.splice(i,1);
+        hit = true;
+        checkReward();
+        break;
+      }
+    }
+  }
+
+  // Enemy bullets
+  for (let i = enemyBullets.length-1; i >= 0; i--) {
+    enemyBullets[i].y += 5;
+    if (enemyBullets[i].y > canvas.height) { enemyBullets.splice(i,1); continue; }
+    if (rHit(enemyBullets[i], player)) {
+      enemyBullets.splice(i,1);
+      lives--;
+      burst(player.x+player.w/2, player.y, C.player);
+      if (lives <= 0) { endGame(); return; }
+    }
+  }
+
+  // Enemy movement
+  if (ts - lastEMove > EMOVE_INT()) {
+    moveEnemies(); lastEMove = ts;
+  }
+  if (ts - lastEShot > ESHOOT_INT()) {
+    enemyShoot(); lastEShot = ts;
+  }
+
+  // Particles
+  for (let i = particles.length-1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.life--;
+    if (p.life <= 0) particles.splice(i,1);
+  }
+
+  draw();
+  checkWin();
+  updateHUD();
+  if (shootCooldown > 0) shootCooldown--;
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+function moveEnemies() {
+  const alive = enemies.filter(e => e.alive);
+  if (!alive.length) return;
+  let wall = false;
+  for (const e of alive) {
+    e.x += 14 * enemyDir;
+    if (e.x <= 0 || e.x + e.w >= canvas.width) wall = true;
+  }
+  if (wall) {
+    enemyDir *= -1;
+    for (const e of alive) { e.y += 10; }
+    if (alive.some(e => e.y + e.h >= player.y)) { endGame(); }
+  }
+}
+
+function enemyShoot() {
+  const cols = {};
+  for (const e of enemies) {
+    if (!e.alive) continue;
+    const k = Math.round(e.x / 46);
+    if (!cols[k] || e.y > cols[k].y) cols[k] = e;
+  }
+  const list = Object.values(cols);
+  if (!list.length) return;
+  const shooter = list[Math.floor(Math.random()*list.length)];
+  enemyBullets.push({ x: shooter.x+shooter.w/2-2, y: shooter.y+shooter.h, w:4, h:10 });
+}
+
+function burst(x, y, color) {
+  for (let i = 0; i < 8; i++) {
+    const a = (Math.PI*2/8)*i;
+    particles.push({ x, y, vx: Math.cos(a)*(1+Math.random()*2), vy: Math.sin(a)*(1+Math.random()*2), life:18, color });
+  }
+}
+
+function rHit(a, b) {
+  return a.x < b.x+b.w && a.x+(a.w||3) > b.x && a.y < b.y+b.h && a.y+(a.h||10) > b.y;
+}
+
+function draw() {
+  // Player
+  ctx.fillStyle = C.player; ctx.shadowColor = C.player; ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(player.x+player.w/2, player.y);
+  ctx.lineTo(player.x+player.w, player.y+player.h);
+  ctx.lineTo(player.x, player.y+player.h);
+  ctx.closePath(); ctx.fill();
+
+  // Enemies
+  for (const e of enemies) {
+    if (!e.alive) continue;
+    const c = C['e'+e.type];
+    ctx.fillStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 5;
+    ctx.fillRect(e.x+4, e.y, e.w-8, e.h);
+    ctx.fillRect(e.x, e.y+4, 4, e.h-8);
+    ctx.fillRect(e.x+e.w-4, e.y+4, 4, e.h-8);
+  }
+
+  // Player bullets
+  ctx.fillStyle = C.bullet; ctx.shadowColor = C.bullet; ctx.shadowBlur = 8;
+  for (const b of bullets) ctx.fillRect(b.x, b.y, 3, 10);
+
+  // Enemy bullets
+  ctx.fillStyle = C.ebullet; ctx.shadowColor = C.ebullet; ctx.shadowBlur = 6;
+  for (const b of enemyBullets) ctx.fillRect(b.x, b.y, b.w, b.h);
+
+  // Particles
+  for (const p of particles) {
+    ctx.globalAlpha = p.life/18;
+    ctx.fillStyle = p.color; ctx.shadowBlur = 0;
+    ctx.fillRect(p.x-2, p.y-2, 4, 4);
+  }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+
+  // Ground line
+  ctx.strokeStyle = '#1a2a4a'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, canvas.height-18); ctx.lineTo(canvas.width, canvas.height-18); ctx.stroke();
+}
+
+function updateHUD() {
+  document.getElementById('hudScore').textContent = score;
+  document.getElementById('hudLives').textContent = lives;
+  document.getElementById('hudLevel').textContent = level;
+  const pct = Math.min(100, (score/500)*100);
+  document.getElementById('scoreProgress').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${score} / 500`;
+}
+
+function checkWin() {
+  if (enemies.every(e => !e.alive)) {
+    level++;
+    initEntities();
+    showToast(`⬡ ¡Nivel ${level}! Más rápido…`, '');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  SISTEMA HMAC + RECOMPENSA/CASTIGO
+// ═══════════════════════════════════════════
+
+async function makeSignature(token, scoreVal) {
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode('s3cr3t_sc0r3_k3y_!Z7'),
+    { name:'HMAC', hash:'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${token}:${scoreVal}`));
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkReward() {
+  if (rewardSent || score < 500 || !gameToken) return;
+  rewardSent = true;
+  try {
+    const sig  = await makeSignature(gameToken, score);
+    const res  = await fetch('/api/reward', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ score, signature: sig })
+    });
+    const data = await res.json();
+    if (data.ok && !data.repeated) {
+      currentUser.saldo = data.saldo;
+      updateUserBar();
+      showSaldoChange('+$500', 'gain');
+      showToast('🎁 ¡+$500 a tu saldo! Superaste 500 puntos.', 'success');
+    }
+  } catch(e) { console.error('Error reward:', e); }
+}
+
+async function sendPenalty() {
+  if (penaltySent || score >= 100 || !gameToken) return;
+  penaltySent = true;
+  try {
+    const sig  = await makeSignature(gameToken, score);
+    const res  = await fetch('/api/penalty', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ score, signature: sig })
+    });
+    const data = await res.json();
+    if (data.ok && !data.repeated) {
+      currentUser.saldo = data.saldo;
+      updateUserBar();
+      showSaldoChange('-$200', 'loss');
+      showToast(`⚠ Penalización: −$200 de saldo (puntaje: ${score})`, 'error');
+    }
+  } catch(e) { console.error('Error penalty:', e); }
+}
+
+function showSaldoChange(text, type) {
+  const el = document.getElementById('saldoChange');
+  el.textContent = text;
+  el.className   = `saldo-change ${type === 'gain' ? 'saldo-gain' : 'saldo-loss'} show`;
+  setTimeout(() => { el.classList.remove('show'); }, 3500);
+}
+
+// ═══════════════════════════════════════════
+//  CONTROL DEL JUEGO
+// ═══════════════════════════════════════════
+
+async function startGame() {
+  if (!currentUser) { showToast('Iniciá sesión para jugar', 'error'); return; }
+  try {
+    const data = await fetch('/api/game-token').then(r => r.json());
+    gameToken = data.token;
+  } catch(e) { showToast('Error al conectar con el servidor', 'error'); return; }
+
+  score = 0; lives = 3; level = 1;
+  rewardSent = false; penaltySent = false;
+  enemyDir = 1; lastEMove = lastEShot = 0; shootCooldown = 0;
+
+  initEntities();
+  document.getElementById('gameOverlay').classList.add('hidden');
+  gameState = 'running';
+  cancelAnimationFrame(animFrame);
+  animFrame = requestAnimationFrame(gameLoop);
+  updateHUD();
+}
+
+async function endGame() {
+  gameState = 'over';
+  cancelAnimationFrame(animFrame);
+
+  // Aplicar castigo si corresponde (< 100 pts)
+  await sendPenalty();
+
+  const ol = document.getElementById('gameOverlay');
+  ol.classList.remove('hidden');
+  document.getElementById('ovTitle').textContent = '— GAME OVER —';
+  document.getElementById('ovScore').textContent = `Puntaje final: ${score}`;
+  document.getElementById('ovMsg').innerHTML = score >= 500
+    ? `🎉 ¡Excelente! Ganaste <strong style="color:var(--gold)">$500</strong> de saldo virtual.`
+    : score >= 100
+      ? `Buen intento. Necesitás 500 pts para la recompensa.<br>Sin penalización (superaste 100 pts).`
+      : `Terminaste con menos de 100 pts. <strong style="color:var(--red)">Penalización: −$200</strong>`;
+
+  updateHUD();
+}
+
+// Controles teclado
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Space' && gameState === 'running') {
+    e.preventDefault(); fireShot();
+  }
+  if (e.code === 'KeyP') {
+    if (gameState === 'running') {
+      gameState = 'paused';
+      cancelAnimationFrame(animFrame);
+      ctx.fillStyle = 'rgba(0,0,0,.65)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#00f5ff';
+      ctx.font = "bold 18px 'Orbitron',monospace";
+      ctx.textAlign = 'center';
+      ctx.fillText('— PAUSADO —', canvas.width/2, canvas.height/2);
+    } else if (gameState === 'paused') {
+      gameState = 'running';
+      animFrame = requestAnimationFrame(gameLoop);
+    }
+  }
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+function fireShot() {
+  if (shootCooldown > 0 || gameState !== 'running') return;
+  bullets.push({ x: player.x+player.w/2-1, y: player.y-10, w:3, h:10 });
+  shootCooldown = 12;
+}
+function touchFire() { fireShot(); }
+</script>
+</body>
+</html>
